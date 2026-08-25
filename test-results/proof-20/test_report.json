@@ -1,0 +1,148 @@
+{
+  "generatedAt": "2026-08-25T05:55:12Z",
+  "totalCases": 20,
+  "passed": 19,
+  "failed": 1,
+  "results": [
+    {
+      "id": "TC-01",
+      "name": "Page loads and banner visible",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_01_Page_loads_and_banner_visible.png"
+    },
+    {
+      "id": "TC-02",
+      "name": "Dashboard title is correct",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_02_Dashboard_title_is_correct.png"
+    },
+    {
+      "id": "TC-03",
+      "name": "Map background is rendered",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_03_Map_background_is_rendered.png"
+    },
+    {
+      "id": "TC-04",
+      "name": "Fleet list has 4 vehicles",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_04_Fleet_list_has_4_vehicles.png"
+    },
+    {
+      "id": "TC-05",
+      "name": "Speed display is non-zero",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_05_Speed_display_is_non-zero.png"
+    },
+    {
+      "id": "TC-06",
+      "name": "RPM display is non-zero",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_06_RPM_display_is_non-zero.png"
+    },
+    {
+      "id": "TC-07",
+      "name": "Fuel value is visible",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_07_Fuel_value_is_visible.png"
+    },
+    {
+      "id": "TC-08",
+      "name": "Battery value is visible",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_08_Battery_value_is_visible.png"
+    },
+    {
+      "id": "TC-09",
+      "name": "Engine temp value is visible",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_09_Engine_temp_value_is_visible.png"
+    },
+    {
+      "id": "TC-10",
+      "name": "GPS coordinates are present",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_10_GPS_coordinates_are_present.png"
+    },
+    {
+      "id": "TC-11",
+      "name": "Footer VIN is populated",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_11_Footer_VIN_is_populated.png"
+    },
+    {
+      "id": "TC-12",
+      "name": "Footer firmware is populated",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_12_Footer_firmware_is_populated.png"
+    },
+    {
+      "id": "TC-13",
+      "name": "Vehicle selection updates the active model",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_13_Vehicle_selection_updates_the_active_model.png"
+    },
+    {
+      "id": "TC-14",
+      "name": "Settings view opens",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_14_Settings_view_opens.png"
+    },
+    {
+      "id": "TC-15",
+      "name": "Theme toggle changes theme",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_15_Theme_toggle_changes_theme.png"
+    },
+    {
+      "id": "TC-16",
+      "name": "Unit toggle changes speed unit",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_16_Unit_toggle_changes_speed_unit.png"
+    },
+    {
+      "id": "TC-17",
+      "name": "Palette switch updates theme palette",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_17_Palette_switch_updates_theme_palette.png"
+    },
+    {
+      "id": "TC-18",
+      "name": "Speed changes over time",
+      "status": "FAIL",
+      "detail": "('39', '39')",
+      "image": "test-results\\proof-20\\TC_18_Speed_changes_over_time.png"
+    },
+    {
+      "id": "TC-19",
+      "name": "RPM changes over time",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_19_RPM_changes_over_time.png"
+    },
+    {
+      "id": "TC-20",
+      "name": "Alerts area renders without crashing",
+      "status": "PASS",
+      "detail": "Condition satisfied",
+      "image": "test-results\\proof-20\\TC_20_Alerts_area_renders_without_crashing.png"
+    }
+  ]
+}

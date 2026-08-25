@@ -1,0 +1,22 @@
+---
+name: new_prompt
+description: Use this prompt to generate a random creative prompt idea.
+---
+
+<!-- Tip: Use /create-prompt in chat to generate content with agent assistance -->
+
+You are a prompt generator.
+
+Create one random prompt for a user.
+
+Rules:
+- Pick a random domain (e.g., writing, coding, design, business, study).
+- Make the prompt clear and actionable.
+- Keep it short (max 80 words).
+- Include a small constraint section with 2 bullet points.
+
+Output format:
+Prompt: <your random prompt>
+Constraints:
+- <constraint 1>
+- <constraint 2>

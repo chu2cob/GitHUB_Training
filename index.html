@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-palette="titanium">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vehicle Telemetry Dashboard</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div id="mapBackground" class="map-background"></div>
+<div class="map-overlay"></div>
+
+<aside class="fleet-rail" aria-label="Fleet vehicles">
+  <div class="fleet-rail-title">Fleet</div>
+  <ul id="fleetList" class="fleet-list"></ul>
+</aside>
+
+<header class="app-header" role="banner">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">◆</span>
+    <div class="brand-text">
+      <span class="brand-model" id="headerVehicleName">TERRAIN ONE</span>
+      <span class="brand-sub">Telemetry Console</span>
+    </div>
+  </div>
+
+  <nav class="main-nav" role="navigation" aria-label="Primary">
+    <button class="nav-btn active" data-view="overview">Overview</button>
+    <button class="nav-btn" data-view="diagnostics">Diagnostics</button>
+    <button class="nav-btn" data-view="trip">Trip History</button>
+    <button class="nav-btn" data-view="settings">Settings</button>
+  </nav>
+
+  <div class="header-status">
+    <span class="conn-chip" id="connChip">
+      <span class="conn-dot" id="connDot"></span>
+      <span id="connLabel">Live</span>
+    </span>
+  </div>
+</header>
+
+<main class="dashboard" id="viewOverview">
+
+  <section class="grid-primary" aria-label="Primary telemetry">
+
+    <article class="card hero" aria-label="Speed">
+      <div class="card-label">Speed</div>
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 120" class="arc-gauge">
+          <path d="M20,110 A80,80 0 0,1 180,110" class="arc-track"/>
+          <path d="M20,110 A80,80 0 0,1 180,110" class="arc-fill" id="speedArc"/>
+        </svg>
+        <div class="gauge-value">
+          <span id="speedValue">0</span>
+          <span class="gauge-unit" id="speedUnit">km/h</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card hero" aria-label="RPM">
+      <div class="card-label">RPM</div>
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 120" class="arc-gauge">
+          <path d="M20,110 A80,80 0 0,1 180,110" class="arc-track"/>
+          <path d="M20,110 A80,80 0 0,1 180,110" class="arc-fill accent-b" id="rpmArc"/>
+        </svg>
+        <div class="gauge-value">
+          <span id="rpmValue">0</span>
+          <span class="gauge-unit">rpm</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" aria-label="Fuel level">
+      <div class="card-label">Fuel</div>
+      <div class="bar-track"><div class="bar-fill" id="fuelBar"></div></div>
+      <div class="card-value" id="fuelValue">--%</div>
+    </article>
+
+    <article class="card" aria-label="Engine temperature">
+      <div class="card-label">Engine Temp</div>
+      <div class="bar-track"><div class="bar-fill" id="tempBar"></div></div>
+      <div class="card-value" id="tempValue">-- °C</div>
+    </article>
+
+    <article class="card" aria-label="Battery status">
+      <div class="card-label">Battery</div>
+      <div class="bar-track"><div class="bar-fill" id="battBar"></div></div>
+      <div class="card-value" id="battValue">--%</div>
+    </article>
+
+    <article class="card" aria-label="Terrain mode">
+      <div class="card-label">Terrain Mode</div>
+      <div class="terrain-modes" id="terrainModes">
+        <span data-mode="Auto">Auto</span>
+        <span data-mode="Grass/Gravel/Snow">Grass/Snow</span>
+        <span data-mode="Mud/Ruts">Mud/Ruts</span>
+        <span data-mode="Sand">Sand</span>
+        <span data-mode="Rock Crawl">Rock</span>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="grid-secondary" aria-label="Diagnostics and location">
+
+    <article class="card" aria-label="Tire pressure">
+      <div class="card-label">Tire Pressure</div>
+      <div class="tire-layout">
+        <div class="tire" id="tireFL">FL<br><span></span></div>
+        <div class="tire" id="tireFR">FR<br><span></span></div>
+        <div class="tire" id="tireRL">RL<br><span></span></div>
+        <div class="tire" id="tireRR">RR<br><span></span></div>
+      </div>
+    </article>
+
+    <article class="card" aria-label="GPS location">
+      <div class="card-label">Location</div>
+      <div class="gps-info">
+        <div>Lat: <span id="gpsLat">--</span></div>
+        <div>Lng: <span id="gpsLng">--</span></div>
+        <div>Heading: <span id="gpsHeading">--</span>°</div>
+        <div>Region: <span id="gpsRegion">--</span></div>
+      </div>
+    </article>
+
+  </section>
+
+  <aside class="alerts-panel" aria-label="Live alerts" aria-live="polite">
+    <div class="card-label">Alerts</div>
+    <ul id="alertsList" class="alerts-list">
+      <li class="alert-empty">All systems normal</li>
+    </ul>
+  </aside>
+
+</main>
+
+<section class="dashboard settings-panel hidden" id="viewSettings">
+  <article class="card">
+    <div class="card-label">Theme</div>
+    <button id="themeToggle" class="toggle-btn">Toggle Dark / Light</button>
+  </article>
+  <article class="card">
+    <div class="card-label">Units</div>
+    <button id="unitToggle" class="toggle-btn">Toggle Metric / Imperial</button>
+  </article>
+  <article class="card">
+    <div class="card-label">Palette</div>
+    <select id="paletteSelect" class="toggle-btn">
+      <option value="titanium">Titanium & Ember</option>
+      <option value="copper">Copper & Slate</option>
+      <option value="arctic">Arctic Blue</option>
+      <option value="amber">Amber & Carbon</option>
+      <option value="cyan">Graphite & Cyan</option>
+      <option value="bronze">Deep Bronze & Ivory</option>
+    </select>
+  </article>
+</section>
+
+<footer class="app-footer">
+  <span>VIN: <span id="footerVin">--</span></span>
+  <span>Firmware: <span id="footerFw">--</span></span>
+  <span>Last Sync: <span id="footerSync">--</span></span>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/unitUtils.js"></script>
+<script src="js/themeManager.js"></script>
+<script src="js/store.js"></script>
+<script src="js/fleetSimulator.js"></script>
+<script src="js/alerts.js"></script>
+<script src="js/mapRenderer.js"></script>
+<script src="js/fleetRenderer.js"></script>
+<script src="js/uiRenderer.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

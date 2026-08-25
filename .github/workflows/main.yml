@@ -1,0 +1,162 @@
+# ============================================================
+# GitHub Actions CI Workflow
+# Purpose: Run unit tests, build the project, and log
+#          push metadata (author, timestamp, commit info)
+#          whenever new code is pushed to the repository.
+# ============================================================
+
+name: CI - Test, Build & Track Changes
+
+# ---------------------------------------------------------
+# Trigger: Runs on every push to any branch.
+# You can restrict to specific branches (e.g., main, develop)
+# by uncommenting the 'branches' filter below.
+# ---------------------------------------------------------
+on:
+  push:
+    branches:
+      - '**'      # Runs on push to ALL branches
+      # - main    # Uncomment to restrict to main only
+      # - develop # Uncomment to restrict to develop only
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # =========================================================
+  # JOB 1: Track Push Metadata (who pushed, when, what changed)
+  # =========================================================
+  track-changes:
+    name: 📋 Track Push Metadata
+    runs-on: ubuntu-latest
+    outputs:
+      commit_author: ${{ steps.meta.outputs.author }}
+      commit_time: ${{ steps.meta.outputs.timestamp }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # Fetch last 2 commits to compare changes
+
+      - name: Extract commit metadata
+        id: meta
+        run: |
+          echo "author=$(git log -1 --pretty=format:'%an <%ae>')" >> $GITHUB_OUTPUT
+          echo "timestamp=$(git log -1 --pretty=format:'%ad' --date=iso)" >> $GITHUB_OUTPUT
+          echo "commit_message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
+          echo "commit_hash=$(git log -1 --pretty=format:'%H')" >> $GITHUB_OUTPUT
+
+      - name: Display push information
+        run: |
+          echo "=================================================="
+          echo "🔍 PUSH METADATA LOG"
+          echo "=================================================="
+          echo "Author       : $(git log -1 --pretty=format:'%an <%ae>')"
+          echo "Timestamp    : $(git log -1 --pretty=format:'%ad' --date=iso)"
+          echo "Commit Hash  : $(git log -1 --pretty=format:'%H')"
+          echo "Commit Msg   : $(git log -1 --pretty=format:'%s')"
+          echo "Branch       : ${{ github.ref_name }}"
+          echo "Triggered By : ${{ github.actor }}"
+          echo "Event Type   : ${{ github.event_name }}"
+          echo "=================================================="
+
+      - name: List changed files
+        run: |
+          echo "Files changed in this push:"
+          git diff --name-only HEAD~1 HEAD || echo "No previous commit to compare (initial commit)."
+
+  # =========================================================
+  # JOB 2: Run Unit Tests
+  # =========================================================
+  unit-tests:
+    name: 🧪 Run Unit Tests
+    runs-on: ubuntu-latest
+    needs: track-changes   # Runs after metadata tracking completes
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]   # Test across multiple Node versions
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'   # Cache dependencies for faster runs
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm test -- --coverage
+        # Ensure your package.json has a "test" script,
+        # e.g., "test": "jest" or "test": "vitest run"
+
+      - name: Upload coverage report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-node-${{ matrix.node-version }}
+          path: coverage/
+          retention-days: 7
+
+  # =========================================================
+  # JOB 3: Build the Project
+  # =========================================================
+  build:
+    name: 🏗️ Build Application
+    runs-on: ubuntu-latest
+    needs: unit-tests   # Build only runs if tests pass
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+        # Ensure your package.json has a "build" script,
+        # e.g., "build": "tsc" or "build": "vite build"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/          # Adjust path based on your build output folder
+          retention-days: 7
+
+  # =========================================================
+  # JOB 4: Final Summary Report
+  # =========================================================
+  summary:
+    name: 📊 Pipeline Summary
+    runs-on: ubuntu-latest
+    needs: [track-changes, unit-tests, build]
+    if: always()   # Runs even if previous jobs fail, to always show summary
+
+    steps:
+      - name: Generate summary report
+        run: |
+          echo "## 🚀 CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Pushed By | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit SHA | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Event | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Job Status | ${{ needs.unit-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build Job Status | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Pipeline completed at $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
